@@ -12,6 +12,7 @@ import {
   TRACKED_EXERCISE_DISPLAY,
 } from './dataUtils';
 
+import { Analytics } from '@vercel/analytics/react';
 import WorkoutFrequency from './components/WorkoutFrequency';
 import VolumeChart from './components/VolumeChart';
 import NeglectedAlert from './components/NeglectedAlert';
@@ -151,6 +152,7 @@ export default function App() {
       <footer className="footer">
         Data from Hevy · Dashboard built with React + Recharts · AI recommendations by Claude
       </footer>
+      <Analytics />
     </div>
   );
 }
