@@ -19,14 +19,22 @@ import NeglectedAlert from './components/NeglectedAlert';
 import ExerciseChart from './components/ExerciseChart';
 import CoreTracker from './components/CoreTracker';
 import GamePlan from './components/GamePlan';
+import Login from './components/Login';
 
 const DAYS = 90;
 
 export default function App() {
+  const [token, setToken] = useState(() => localStorage.getItem('auth_token'));
   const [state, setState] = useState({ status: 'idle', workouts: [], templates: [] });
   const [error, setError] = useState(null);
 
+  function handleLogout() {
+    localStorage.removeItem('auth_token');
+    setToken(null);
+  }
+
   useEffect(() => {
+    if (!token) return;
     let cancelled = false;
     setState((s) => ({ ...s, status: 'loading' }));
 
@@ -41,7 +49,11 @@ export default function App() {
       });
 
     return () => { cancelled = true; };
-  }, []);
+  }, [token]);
+
+  if (!token) {
+    return <Login onLogin={setToken} />;
+  }
 
   const { status, workouts, templates } = state;
 
@@ -65,10 +77,11 @@ export default function App() {
             Last {DAYS} days · {workouts.length} workouts tracked via Hevy
           </p>
         </div>
-        <div className="header-badge">
+        <div className="header-right">
           {status === 'loading' && <span className="badge badge-loading">Syncing…</span>}
           {status === 'done' && <span className="badge badge-done">Live</span>}
           {error && <span className="badge badge-error">Error</span>}
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
       </header>
 
