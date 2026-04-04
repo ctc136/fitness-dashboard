@@ -20,6 +20,7 @@ import ExerciseChart from './components/ExerciseChart';
 import CoreTracker from './components/CoreTracker';
 import GamePlan from './components/GamePlan';
 import Login from './components/Login';
+import StravaSection from './components/StravaSection';
 
 const DAYS = 90;
 
@@ -27,6 +28,7 @@ export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem('auth_token'));
   const [state, setState] = useState({ status: 'idle', workouts: [], templates: [] });
   const [error, setError] = useState(null);
+  const [stravaState, setStravaState] = useState({ status: 'loading', data: null, error: null });
 
   function handleLogout() {
     localStorage.removeItem('auth_token');
@@ -46,6 +48,24 @@ export default function App() {
       })
       .catch((err) => {
         if (!cancelled) setError(err.message);
+      });
+
+    return () => { cancelled = true; };
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+
+    fetch('/api/strava')
+      .then(res => res.json())
+      .then(json => {
+        if (cancelled) return;
+        if (json.error) throw new Error(json.error);
+        setStravaState({ status: 'done', data: json, error: null });
+      })
+      .catch(err => {
+        if (!cancelled) setStravaState({ status: 'error', data: null, error: err.message });
       });
 
     return () => { cancelled = true; };
@@ -118,8 +138,19 @@ export default function App() {
             <div className="grid-3">
               <WorkoutFrequency data={weeklyFreq} />
               <VolumeChart data={muscleVolume} />
-              <NeglectedAlert neglected={neglected} />
+              <NeglectedAlert neglected={neglected} recentRuns={stravaState.data?.recentRuns} />
             </div>
+          </section>
+
+          {/* ── Section 1b: Running (Strava) ── */}
+          <section>
+            <h2 className="section-title">Running</h2>
+            <p className="section-subtitle">Mileage and recent runs via Strava</p>
+            <StravaSection
+              data={stravaState.data}
+              status={stravaState.status}
+              error={stravaState.error}
+            />
           </section>
 
           {/* ── Section 2: Exercise Progress ── */}
@@ -163,7 +194,7 @@ export default function App() {
       )}
 
       <footer className="footer">
-        Data from Hevy · Dashboard built with React + Recharts · AI recommendations by Claude
+        Data from Hevy &amp; Strava · Dashboard built with React + Recharts · AI recommendations by Claude
       </footer>
       <Analytics />
     </div>
