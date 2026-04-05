@@ -21,7 +21,7 @@ export default function NeglectedAlert({ neglected, recentRuns }) {
     }}>
       <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
       <span style={{ color: '#fca5a5', fontSize: 13, fontWeight: 600 }}>
-        {daysSinceLongRun} days since a 10+ mile run
+        {daysSinceLongRun > 60 ? '60+' : daysSinceLongRun} days since a 10+ mile run
       </span>
     </div>
   ) : null;

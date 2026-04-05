@@ -38,8 +38,8 @@ export default async function handler(req, res) {
 
     const accessToken = tokenData.access_token;
 
-    // Step 2: Fetch last 60 days of activities
-    const after = Math.floor(Date.now() / 1000) - 60 * 24 * 60 * 60;
+    // Step 2: Fetch last 90 days of activities
+    const after = Math.floor(Date.now() / 1000) - 90 * 24 * 60 * 60;
     const activitiesRes = await fetch(
       `https://www.strava.com/api/v3/athlete/activities?after=${after}&per_page=100`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -72,9 +72,41 @@ export default async function handler(req, res) {
       if (date >= startOfMonth) monthlyMiles += miles;
     });
 
+    // Build weekly miles breakdown for chart
+    const weeklyMilesMap = new Map();
+    runs.forEach(run => {
+      const date = new Date(run.start_date);
+      const daysFromMonday = (date.getDay() + 6) % 7;
+      const ws = new Date(date);
+      ws.setDate(date.getDate() - daysFromMonday);
+      ws.setHours(0, 0, 0, 0);
+      const key = ws.toISOString().split('T')[0];
+      weeklyMilesMap.set(key, (weeklyMilesMap.get(key) || 0) + run.distance / 1609.34);
+    });
+
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const firstWeek = new Date(ninetyDaysAgo);
+    firstWeek.setDate(firstWeek.getDate() - (firstWeek.getDay() + 6) % 7);
+    firstWeek.setHours(0, 0, 0, 0);
+
+    const weeklyMilesData = [];
+    const today = new Date();
+    for (let d = new Date(firstWeek); d <= today; d.setDate(d.getDate() + 7)) {
+      const key = d.toISOString().split('T')[0];
+      weeklyMilesData.push({
+        week: `${d.getMonth() + 1}/${d.getDate()}`,
+        miles: Math.round((weeklyMilesMap.get(key) || 0) * 10) / 10,
+      });
+    }
+
+    const totalMiles = Math.round(runs.reduce((s, r) => s + r.distance / 1609.34, 0) * 10) / 10;
+
     res.status(200).json({
       weeklyMiles: Math.round(weeklyMiles * 10) / 10,
       monthlyMiles: Math.round(monthlyMiles * 10) / 10,
+      totalRuns: runs.length,
+      totalMiles,
+      weeklyMilesData,
       recentRuns: runs.slice(0, 5).map(r => ({
         name: r.name,
         date: r.start_date.split('T')[0],

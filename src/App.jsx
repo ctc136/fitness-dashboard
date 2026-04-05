@@ -95,6 +95,9 @@ export default function App() {
           <h1 className="header-title">Fitness Dashboard</h1>
           <p className="header-subtitle">
             Last {DAYS} days · {workouts.length} workouts tracked via Hevy
+            {stravaState.status === 'done' && stravaState.data
+              ? ` and ${stravaState.data.totalRuns} runs via Strava`
+              : null}
           </p>
         </div>
         <div className="header-right">
@@ -104,12 +107,6 @@ export default function App() {
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
       </header>
-
-      {/* Running note */}
-      <div className="notice">
-        <span style={{ color: '#f59e0b', marginRight: 6 }}>⚡</span>
-        Running is not tracked in Hevy — leg and cardio volume will appear lower than your actual activity.
-      </div>
 
       {/* Error state */}
       {error && (
@@ -134,7 +131,7 @@ export default function App() {
         <>
           {/* ── Section 1: Overview Row ── */}
           <section>
-            <h2 className="section-title">Overview</h2>
+            <h2 className="section-title">Lifting Overview</h2>
             <div className="grid-3">
               <WorkoutFrequency data={weeklyFreq} />
               <VolumeChart data={muscleVolume} />
@@ -144,7 +141,7 @@ export default function App() {
 
           {/* ── Section 1b: Running (Strava) ── */}
           <section>
-            <h2 className="section-title">Running</h2>
+            <h2 className="section-title">Running Overview</h2>
             <p className="section-subtitle">Mileage and recent runs via Strava</p>
             <StravaSection
               data={stravaState.data}
