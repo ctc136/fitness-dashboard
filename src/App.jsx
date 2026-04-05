@@ -135,7 +135,7 @@ export default function App() {
             <div className="grid-3">
               <WorkoutFrequency data={weeklyFreq} />
               <VolumeChart data={muscleVolume} />
-              <NeglectedAlert neglected={neglected} recentRuns={stravaState.data?.recentRuns} />
+              <NeglectedAlert neglected={neglected} />
             </div>
           </section>
 

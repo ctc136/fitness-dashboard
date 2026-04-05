@@ -52,8 +52,10 @@ export default async function handler(req, res) {
       throw new Error(`Activities fetch failed: ${activities.message || activitiesRes.status}`);
     }
 
-    // Step 3: Filter runs only and calculate mileage
-    const runs = activities.filter(a => a.type === 'Run');
+    // Step 3: Filter runs only, sort by most recent first, and calculate mileage
+    const runs = activities
+      .filter(a => a.type === 'Run')
+      .sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
 
     const now = new Date();
     const startOfWeek = new Date(now);
@@ -101,12 +103,18 @@ export default async function handler(req, res) {
 
     const totalMiles = Math.round(runs.reduce((s, r) => s + r.distance / 1609.34, 0) * 10) / 10;
 
+    const lastLongRun = runs.find(r => r.distance / 1609.34 >= 10);
+    const daysSinceLastLongRun = lastLongRun
+      ? Math.floor((Date.now() - new Date(lastLongRun.start_date).getTime()) / (1000 * 60 * 60 * 24))
+      : null;
+
     res.status(200).json({
       weeklyMiles: Math.round(weeklyMiles * 10) / 10,
       monthlyMiles: Math.round(monthlyMiles * 10) / 10,
       totalRuns: runs.length,
       totalMiles,
       weeklyMilesData,
+      daysSinceLastLongRun,
       recentRuns: runs.slice(0, 5).map(r => ({
         name: r.name,
         date: r.start_date.split('T')[0],

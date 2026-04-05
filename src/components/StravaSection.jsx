@@ -37,10 +37,32 @@ export default function StravaSection({ data, status, error }) {
 
   if (!data) return null;
 
-  const { monthlyMiles, weeklyMilesData = [], recentRuns } = data;
+  const { monthlyMiles, weeklyMilesData = [], recentRuns, daysSinceLastLongRun } = data;
+
+  const showLongRunAlert = daysSinceLastLongRun !== null && daysSinceLastLongRun >= 8;
+  const longRunDisplay = daysSinceLastLongRun > 90 ? '90+' : daysSinceLastLongRun;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {showLongRunAlert && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          padding: '14px 18px',
+          borderRadius: 10,
+          background: 'rgba(239,68,68,0.08)',
+          border: '1px solid rgba(239,68,68,0.3)',
+        }}>
+          <span style={{ fontSize: 22, flexShrink: 0 }}>⚠️</span>
+          <div>
+            <span style={{ color: '#f87171', fontSize: 15, fontWeight: 700 }}>
+              {longRunDisplay} days
+            </span>
+            <span style={{ color: '#fca5a5', fontSize: 14, fontWeight: 500 }}> since a 10+ mile run</span>
+          </div>
+        </div>
+      )}
       <div className="grid-3">
         {/* Weekly miles bar chart */}
         <div className="card">

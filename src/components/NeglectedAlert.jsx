@@ -1,31 +1,7 @@
 import React from 'react';
 import { MUSCLE_COLORS } from '../dataUtils';
 
-export default function NeglectedAlert({ neglected, recentRuns }) {
-  const lastLongRun = recentRuns?.find(r => r.miles >= 10) ?? null;
-  const daysSinceLongRun = lastLongRun
-    ? Math.floor((Date.now() - new Date(lastLongRun.date).getTime()) / (1000 * 60 * 60 * 24))
-    : null;
-  const showLongRunAlert = daysSinceLongRun !== null && daysSinceLongRun >= 8;
-
-  const longRunBanner = showLongRunAlert ? (
-    <div style={{
-      marginTop: 12,
-      padding: '10px 12px',
-      borderRadius: 8,
-      background: 'rgba(239,68,68,0.08)',
-      border: '1px solid rgba(239,68,68,0.25)',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 8,
-    }}>
-      <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
-      <span style={{ color: '#fca5a5', fontSize: 13, fontWeight: 600 }}>
-        {daysSinceLongRun > 60 ? '60+' : daysSinceLongRun} days since a 10+ mile run
-      </span>
-    </div>
-  ) : null;
-
+export default function NeglectedAlert({ neglected }) {
   if (neglected.length === 0) {
     return (
       <div className="card" style={{ borderColor: '#14532d' }}>
@@ -36,7 +12,6 @@ export default function NeglectedAlert({ neglected, recentRuns }) {
             All tracked muscle groups hit within the last 7 days.
           </p>
         </div>
-        {longRunBanner}
       </div>
     );
   }
@@ -73,7 +48,6 @@ export default function NeglectedAlert({ neglected, recentRuns }) {
           );
         })}
       </div>
-      {longRunBanner}
     </div>
   );
 }
