@@ -1,6 +1,6 @@
 # Fitness Dashboard
 
-A personal fitness analytics dashboard that pulls your workout history from the [Hevy](https://www.hevyapp.com/) app and surfaces trends, muscle imbalances, and an AI-generated weekly training plan powered by Claude.
+A personal fitness analytics dashboard that pulls your workout history from the [Hevy](https://www.hevyapp.com/) app and Strava that surfaces trends, muscle imbalances, and an AI-generated weekly training plan powered by Claude.
 
 ---
 
@@ -24,6 +24,7 @@ A personal fitness analytics dashboard that pulls your workout history from the 
 - **Recharts** — charts and data visualization
 - **date-fns** — date math and formatting
 - **Hevy REST API** — workout data source
+- **Strava OAuth** - running data source
 - **Anthropic Claude API** — AI game plan generation (proxied server-side through Vite so the API key never hits the browser)
 
 ---
@@ -57,6 +58,7 @@ fitness-dashboard/
 - [Node.js](https://nodejs.org/) v18 or higher
 - A [Hevy](https://www.hevyapp.com/) account with an API key
 - An [Anthropic](https://console.anthropic.com/) API key (for the AI game plan feature)
+- A Strava account with API credentials (Client ID and Client Secret)
 
 ---
 
@@ -87,6 +89,8 @@ fitness-dashboard/
 4. **Get your Hevy API key**
    - Open the Hevy app → Profile → Settings → API
    - Copy your key and paste it into `.env`
+
+5. **Get your Strava creadentials**
 
 ---
 
@@ -123,5 +127,4 @@ When you click **Generate Game Plan**, the app sends a summary of your last 90 d
 ## Notes
 
 - Workout weights are stored in **kg** by the Hevy API and converted to **lbs** for display.
-- Running and cardio logged outside Hevy will not appear in the dashboard — leg and cardio volume will look lower than your actual activity.
-- This app is intended for **local personal use**. Do not deploy it publicly without moving the Hevy API key to a backend proxy as well.
+- This app is intended for **local personal use**.
