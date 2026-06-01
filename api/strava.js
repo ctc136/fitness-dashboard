@@ -37,6 +37,12 @@ export default async function handler(req, res) {
     }
 
     const accessToken = tokenData.access_token;
+    
+    // === STRAVA API MIGRATION (required by 2027-06-01) ===
+   // 1. Base URL -> https://www.api-v3.strava.com/athlete/activities  (drops /api/v3)
+   // 2. Access token already sent via Authorization header below - OK, no change
+   // 3. No oauth/deauthorize used - nothing to migrate to oauth/revoke
+
 
     // Step 2: Fetch last 90 days of activities
     const after = Math.floor(Date.now() / 1000) - 90 * 24 * 60 * 60;
