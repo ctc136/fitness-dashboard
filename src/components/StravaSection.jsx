@@ -117,9 +117,9 @@ export default function StravaSection({ data, status, error }) {
             <p style={{ color: '#475569', fontSize: 13, marginTop: 8 }}>No recent runs found.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-              {recentRuns.map((run, i) => (
+              {recentRuns.map((run) => (
                 <div
-                  key={i}
+                  key={run.id}
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
