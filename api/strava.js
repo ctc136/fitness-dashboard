@@ -122,6 +122,8 @@ export default async function handler(req, res) {
       weeklyMilesData,
       daysSinceLastLongRun,
       recentRuns: runs.slice(0, 5).map(r => ({
+        // Strava IDs can exceed Number.MAX_SAFE_INTEGER; never use the numeric `id`
+        id: r.id_str,
         name: r.name,
         date: r.start_date.split('T')[0],
         miles: Math.round((r.distance / 1609.34) * 10) / 10,
